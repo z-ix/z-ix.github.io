@@ -1,0 +1,39 @@
+name: Deploy
+
+# on 定义的是执行该 Action 的时机，这里的配置是指：
+# 当 main 分支的 push 事件被触发的时候执行该任务
+on:
+  push:
+    branches: [main]
+# jobs 是定义你要运行的具体任务，
+# 每个 Action 可以有多个 Job
+# 每个 Job 可以有多个 Step
+# 每个 Step 又可以有多个 Run
+jobs:
+  build:
+    runs-on: ubuntu-latest # 运行在 ubuntu 系统环境下
+    steps:
+      - uses: actions/checkout@v2 # uses 命令允许我们使用别人定义好的 Action，这里是从仓库检出分支
+      - uses: actions/setup-node@v2 # 这里是设置 node 版本
+        with: # 这里相当于传递给上面指令的参数，告诉他使用 node@12.13.1 这个版本
+          node-version: '12.13.1'
+      - name: Install Dependencies # name 定义步骤的名称，这个可以在该 Action 运行起来之后，在 Github Actions Tab 下看到
+        run: | # `run: |` 的方式，允许我们一次定义多个要执行的命令
+          yarn install
+          yarn run build
+      - name: Push To Pages
+        working-directory: ./dist # 指定下面指令运行的目录
+        run: |
+          git init
+          git checkout -b main
+          git add -A
+        # 这里把下面所有 `<YOUR_NAME>/<YOUR_EMAIL>/<COMMIT_MSG>/<YOUR_TOKEN>` 替换成你自己的就可以了
+          git -c user.name='<YOUR_NAME>' -c user.email='<YOUR_EMAIL>' commit -m '<COMMIT_MSG>'
+        # 这里需要一个 共开仓库 的 secrets 配置，这里的 secrets 是一个环境变量，可以直接拿过来直接用
+          git remote add origin https://${{secrets.<YOUR_TOKEN>}}@github.com/<YOUR_NAME>/blog.git
+          git push origin main -f -q
+
+作者：Aphasia_wq
+链接：https://juejin.cn/post/7008847699919241229
+来源：稀土掘金
+著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。
