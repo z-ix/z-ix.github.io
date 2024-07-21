@@ -27,7 +27,7 @@ tucaoUrl: https://support.qq.com/product/86335
 # 必填字段 title: '文本' url: '链接'
 # 可选字段 target: '_blank' 新页面打开 
 menu:
-  - title: 首页
+  - title: 混合理论
     url: /
   - title: 归类
     url: /pages/categories.html
